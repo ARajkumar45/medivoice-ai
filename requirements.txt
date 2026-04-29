@@ -1,0 +1,7 @@
+streamlit==1.44.1
+streamlit-audiorecorder==0.0.6
+google-cloud-aiplatform==1.93.0
+gTTS==2.5.4
+SpeechRecognition==3.14.2
+python-dotenv==1.0.1
+pydub==0.25.1

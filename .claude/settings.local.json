@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cd \"D:\\\\AI_Projects\\\\medivoice-ai\"; $content = Get-Content \"graphify-out/GRAPH_REPORT.md\" -Raw -Encoding utf8; $sections = @\\(\"## God Nodes\", \"## Surprising Connections\", \"## Suggested Questions\"\\); foreach \\($sec in $sections\\) { $start = $content.IndexOf\\($sec\\); if \\($start -ge 0\\) { $next = $content.Length; foreach \\($s2 in $sections\\) { if \\($s2 -ne $sec\\) { $pos = $content.IndexOf\\($s2, $start + $sec.Length\\); if \\($pos -gt $start -and $pos -lt $next\\) { $next = $pos } } } $chunk = $content.Substring\\($start, $next - $start\\); Write-Output $chunk } })"
+    ]
+  }
+}
