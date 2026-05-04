@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MedFlow Intake - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "primary-container": "#4fd1c5",
+                        "primary": "#006a63",
+                        "tertiary": "#555f71",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#cbe6ff",
+                        "primary-fixed-dim": "#5adace",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary-fixed": "#00201d",
+                        "secondary-container": "#74c3fe",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed-variant": "#00504a",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#5adace",
+                        "surface-tint": "#006a63",
+                        "on-surface": "#191c1e",
+                        "outline-variant": "#bbc9c7",
+                        "outline": "#6c7a77",
+                        "on-tertiary-fixed-variant": "#3d4759",
+                        "on-tertiary-fixed": "#121c2c",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-high": "#e6e8ea",
+                        "on-secondary-container": "#005077",
+                        "surface": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#3c4947",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#004b71",
+                        "tertiary-container": "#b4bed3",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary-fixed-dim": "#bdc7dc",
+                        "primary-fixed": "#79f7ea",
+                        "on-tertiary-container": "#434d5f",
+                        "on-secondary-fixed": "#001e30",
+                        "on-background": "#191c1e",
+                        "tertiary-fixed": "#d9e3f9",
+                        "secondary": "#006494",
+                        "surface-container": "#eceef0",
+                        "background": "#f7f9fb",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#8ecdff",
+                        "on-primary-container": "#005750"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "container-max": "1440px",
+                        "margin": "32px",
+                        "xl": "48px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "h3": ["Inter"],
+                        "h1": ["Inter"],
+                        "h2": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0em", "fontWeight": "600" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex font-body-md overflow-x-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest dark:bg-slate-900 font-body-sm text-sm tracking-normal docked left-0 h-full border-r border-r border-surface-variant dark:border-slate-800 flat no shadows fixed left-0 top-0 h-screen w-64 flex flex-col p-4 z-50">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-on-surface dark:text-white leading-tight font-h3 text-h3">Medical Center</h2>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Intake Department</p>
+</div>
+</div>
+<div class="flex-1 space-y-2">
+<!-- Active: Home -->
+<a class="flex items-center gap-3 px-4 py-3 bg-surface-container-lowest dark:bg-slate-800 text-primary-container dark:text-teal-400 rounded-lg shadow-sm font-semibold hover:bg-surface-container-low dark:hover:bg-slate-700 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-slate-400 hover:bg-surface-container-low dark:hover:bg-slate-800 rounded-lg hover:bg-surface-container-low dark:hover:bg-slate-700 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Patients</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-slate-400 hover:bg-surface-container-low dark:hover:bg-slate-800 rounded-lg hover:bg-surface-container-low dark:hover:bg-slate-700 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Records</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-slate-400 hover:bg-surface-container-low dark:hover:bg-slate-800 rounded-lg hover:bg-surface-container-low dark:hover:bg-slate-700 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-4">
+<button class="w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-3 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                New Intake
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-slate-950 text-primary-container dark:text-teal-400 font-body-sm text-sm font-medium tracking-tight docked full-width top-0 border-b border-b border-surface-variant dark:border-slate-800 flat no shadows sticky top-0 z-40 flex justify-between items-center w-full px-6 py-3">
+<div class="flex items-center gap-4 w-1/3">
+<h1 class="text-xl font-bold text-primary-container dark:text-teal-400 font-h2 text-h2">MedFlow Intake</h1>
+</div>
+<div class="flex-1 max-w-md mx-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:outline-none focus:border-secondary-container focus:ring-2 focus:ring-secondary-container/20 font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant/60" placeholder="Search patients or records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 w-1/3 justify-end">
+<button class="text-on-surface-variant hover:text-primary-container transition-colors p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-container transition-colors p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-surface-variant ml-2">
+<img alt="Medical Practitioner Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a female medical practitioner wearing a white coat and stethoscope, smiling warmly in a bright, modern clinical setting. The lighting is soft and natural, emphasizing a clean, sterile but welcoming environment. High key lighting with subtle teal and gray background elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkO-PhGJTLZl3OLg2Qvf2omaDSQTyDL6rdopKpefG753895Z0HUfjmiQImse8uNDFH7pfnhKDcqxrFo9kQTOAYUSMBl2p2gzYnii_56IrVa_ZaRo156uixnQ1NmQpyjqG1oyzAFIW0QiNn36lA3RkAyVERl8EQhjyl-ZME4l_ZIauVq-CcxBpcTCJtAB82ufhap83EpZ3lNkfJ6iexkUMLqvxC16_xgUpsa43hW9K6VI6TKDo8OZ87WL4gK3OdRu8baPmqGlhgMj0"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-margin overflow-y-auto w-full max-w-container-max mx-auto">
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="font-h1 text-h1 text-on-surface mb-xs">Patient Intake Session</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Active recording for Patient ID: #88492</p>
+</div>
+<div class="flex gap-md">
+<span class="inline-flex items-center gap-xs px-3 py-1 rounded-full bg-secondary-fixed-dim/20 text-secondary border border-secondary-fixed-dim/30 font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                        Recording
+                    </span>
+<span class="inline-flex items-center gap-xs px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant border border-surface-variant font-label-sm text-label-sm">
+                        Standard Consult
+                    </span>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter min-h-[600px]">
+<!-- Central Voice Action (Spans 4 columns, positioned centrally in visual weight) -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-surface-variant rounded-xl p-lg flex flex-col items-center justify-center relative overflow-hidden group shadow-[0px_10px_15px_-3px_rgba(148,163,184,0.05)]">
+<div class="absolute inset-0 bg-gradient-to-b from-primary-container/5 to-transparent pointer-events-none"></div>
+<div class="mb-xl text-center z-10">
+<h3 class="font-h3 text-h3 text-on-surface">Voice Capture</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Listening to patient dialogue...</p>
+</div>
+<!-- Prominent Circular Button -->
+<div class="relative z-10 w-48 h-48 flex items-center justify-center mb-xl">
+<!-- Pulse Rings -->
+<div class="absolute inset-0 rounded-full border border-primary-container/30"></div>
+<div class="absolute inset-4 rounded-full border border-primary-container/20"></div>
+<div class="absolute inset-8 rounded-full border border-primary-container/10"></div>
+<button class="w-24 h-24 bg-primary-container text-on-primary-container rounded-full shadow-[0px_10px_20px_-5px_rgba(79,209,197,0.4)] flex items-center justify-center hover:scale-105 transition-transform duration-300 relative z-20">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<div class="flex gap-4 z-10 w-full px-4">
+<button class="flex-1 py-2 px-4 rounded-lg border border-surface-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-low transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-sm">pause</span> Pause
+                        </button>
+<button class="flex-1 py-2 px-4 rounded-lg bg-surface-tint text-on-primary font-label-md text-label-md hover:opacity-90 transition-opacity flex justify-center items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">stop_circle</span> End Session
+                        </button>
+</div>
+</div>
+<!-- Live Transcription (Spans 8 columns on large screens) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+<!-- Transcription Card -->
+<div class="flex-1 bg-surface-container-lowest border border-surface-variant rounded-xl p-lg flex flex-col shadow-[0px_10px_15px_-3px_rgba(148,163,184,0.05)]">
+<div class="flex items-center justify-between mb-md pb-xs border-b border-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">notes</span>
+<h3 class="font-h3 text-h3 text-on-surface">Live Transcription</h3>
+</div>
+<button class="text-primary-container font-label-sm text-label-sm hover:underline">Edit Manually</button>
+</div>
+<div class="flex-1 bg-surface-bright rounded-lg border border-surface-variant p-4 overflow-y-auto min-h-[200px]">
+<p class="font-body-md text-body-md text-on-surface-variant mb-3"><span class="font-semibold text-on-surface">Dr. Smith:</span> Good morning, Sarah. How have you been feeling since we adjusted your medication last month?</p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3"><span class="font-semibold text-secondary">Patient:</span> It's been mostly better, I think. The headaches aren't as frequent, maybe just once or twice a week now instead of every day. But I have been feeling a little more tired in the afternoons.</p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3"><span class="font-semibold text-on-surface">Dr. Smith:</span> Okay, that's good progress on the headaches. The fatigue could be related. Are you taking it with food as we discussed?</p>
+<p class="font-body-md text-body-md text-on-surface-variant"><span class="font-semibold text-secondary">Patient:</span> Mostly, yes. But sometimes I forget if I'm in a rush...</p>
+<!-- Typing indicator -->
+<div class="flex gap-1 mt-4 opacity-50">
+<div class="w-1.5 h-1.5 bg-on-surface-variant rounded-full"></div>
+<div class="w-1.5 h-1.5 bg-on-surface-variant rounded-full"></div>
+<div class="w-1.5 h-1.5 bg-on-surface-variant rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Clinical Summary & Extracted Data -->
+<div class="flex-1 bg-surface-container-lowest border border-surface-variant rounded-xl p-lg shadow-[0px_10px_15px_-3px_rgba(148,163,184,0.05)]">
+<div class="flex items-center justify-between mb-md pb-xs border-b border-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">fact_check</span>
+<h3 class="font-h3 text-h3 text-on-surface">Auto-Extracted Summary</h3>
+</div>
+<span class="bg-surface-container-high text-on-surface-variant px-2 py-1 rounded font-label-sm text-label-sm">Syncing to EMR</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Key Findings -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-2 uppercase tracking-wider">Chief Complaint / Updates</h4>
+<ul class="space-y-2">
+<li class="flex items-start gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary-container mt-0.5">check_circle</span>
+                                        Reduction in headache frequency (1-2x/week vs daily).
+                                    </li>
+<li class="flex items-start gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-error mt-0.5">info</span>
+                                        New symptom: Afternoon fatigue reported.
+                                    </li>
+<li class="flex items-start gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-tertiary mt-0.5">warning</span>
+                                        Inconsistent adherence to taking medication with food.
+                                    </li>
+</ul>
+</div>
+<!-- Action Items -->
+<div class="bg-surface-bright rounded-lg p-3 border border-surface-variant">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 uppercase tracking-wider">Proposed Actions</h4>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-surface-variant text-primary-container focus:ring-primary-container/20 w-4 h-4 bg-surface-container-lowest" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Review diet/medication schedule</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-surface-variant text-primary-container focus:ring-primary-container/20 w-4 h-4 bg-surface-container-lowest" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Consider fatigue labs if persists</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

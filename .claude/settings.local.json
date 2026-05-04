@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(cd \"D:\\\\AI_Projects\\\\medivoice-ai\"; $content = Get-Content \"graphify-out/GRAPH_REPORT.md\" -Raw -Encoding utf8; $sections = @\\(\"## God Nodes\", \"## Surprising Connections\", \"## Suggested Questions\"\\); foreach \\($sec in $sections\\) { $start = $content.IndexOf\\($sec\\); if \\($start -ge 0\\) { $next = $content.Length; foreach \\($s2 in $sections\\) { if \\($s2 -ne $sec\\) { $pos = $content.IndexOf\\($s2, $start + $sec.Length\\); if \\($pos -gt $start -and $pos -lt $next\\) { $next = $pos } } } $chunk = $content.Substring\\($start, $next - $start\\); Write-Output $chunk } })"
+      "PowerShell(cd \"D:\\\\AI_Projects\\\\medivoice-ai\"; $content = Get-Content \"graphify-out/GRAPH_REPORT.md\" -Raw -Encoding utf8; $sections = @\\(\"## God Nodes\", \"## Surprising Connections\", \"## Suggested Questions\"\\); foreach \\($sec in $sections\\) { $start = $content.IndexOf\\($sec\\); if \\($start -ge 0\\) { $next = $content.Length; foreach \\($s2 in $sections\\) { if \\($s2 -ne $sec\\) { $pos = $content.IndexOf\\($s2, $start + $sec.Length\\); if \\($pos -gt $start -and $pos -lt $next\\) { $next = $pos } } } $chunk = $content.Substring\\($start, $next - $start\\); Write-Output $chunk } })",
+      "Bash(venv/Scripts/pip show *)",
+      "Bash(venv/Scripts/pip install *)",
+      "Bash(venv/Scripts/python -c \"import speech_recognition; print\\(speech_recognition.__version__\\)\")",
+      "Bash(winget install *)",
+      "Bash(not exist *)",
+      "Bash(python3 /tmp/write_graph.py)",
+      "Bash(python3 *)",
+      "PowerShell(python -c \"import json,pathlib; d=json.loads\\(pathlib.Path\\(r'D:\\\\AI_Projects\\\\medivoice-ai\\\\graphify-out\\\\.graphify_chunk_01.json'\\).read_text\\(\\)\\); print\\('nodes:', len\\(d['nodes']\\), 'edges:', len\\(d['edges']\\), 'hyperedges:', len\\(d['hyperedges']\\)\\)\")",
+      "PowerShell(cd \"D:\\\\AI_Projects\\\\medivoice-ai\"; $env:PYTHONUTF8=\"1\"; Get-Content graphify-out/GRAPH_REPORT.md -Encoding utf8 | Select-String -Pattern \"^## \\(God Nodes|Surprising|Suggested\\)\" -Context 0,30 | ForEach-Object { $_.Line; $_.Context.PostContext | Select-Object -First 28; \"---\" })",
+      "Read(//d/AI_Projects/brain/**)",
+      "Bash(graphify query *)",
+      "Bash(python -m py_compile app.py)",
+      "Bash(python -m py_compile utils/config.py)"
     ]
   }
 }

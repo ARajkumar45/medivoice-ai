@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 import vertexai
-from vertexai.generative_models import GenerationConfig, GenerativeModel
+from vertexai.generative_models import GenerationConfig, GenerativeModel, Part
 
 from .config import VertexSettings
 
@@ -188,6 +188,30 @@ class GeminiClient:
         vertexai.init(project=config.project_id, location=config.region)
         self.model = GenerativeModel(config.model_name, system_instruction=SYSTEM_PROMPT)
 
+    def transcribe_audio(self, audio_bytes: bytes, mime_type: str = "audio/wav") -> str:
+        """Transcribe audio bytes using Gemini's multimodal capability.
+
+        Much more accurate than free speech-recognition APIs, especially for
+        medical vocabulary and accented speech.
+
+        Raises:
+            ValueError: If the model returns an empty transcript.
+        """
+        audio_part = Part.from_data(data=audio_bytes, mime_type=mime_type)
+        transcription_model = GenerativeModel(self.config.model_name)
+        response = transcription_model.generate_content(
+            [
+                "Transcribe the following audio recording verbatim and accurately. "
+                "Return only the spoken words — no commentary, no formatting.",
+                audio_part,
+            ],
+            generation_config=GenerationConfig(temperature=0.0),
+        )
+        text = (getattr(response, "text", "") or "").strip()
+        if not text:
+            raise ValueError("Gemini returned an empty transcription.")
+        return text
+
     def continue_intake(
         self, conversation: List[ConversationTurn], session_id: str
     ) -> IntakeResponse:
@@ -249,3 +273,139 @@ class GeminiClient:
         if not isinstance(payload, dict):
             raise ValueError("The AI response was not a JSON object.")
         return payload
+
+
+class NvidiaClient:
+    """NVIDIA NIM client using the OpenAI-compatible API endpoint.
+
+    Supports any model hosted on ``integrate.api.nvidia.com``.
+    Model names follow the ``provider/model-name`` convention (e.g.
+    ``meta/llama-3.1-70b-instruct``).
+
+    Audio transcription is not available; the browser's live speech preview
+    is used instead when a NVIDIA model is active.
+    """
+
+    _BASE_URL = "https://integrate.api.nvidia.com/v1"
+
+    def __init__(self, api_key: str, model_name: str = "meta/llama-3.1-70b-instruct") -> None:
+        from openai import OpenAI  # lazy import — optional dependency
+        self._client = OpenAI(base_url=self._BASE_URL, api_key=api_key)
+        self._model_name = model_name
+
+    def transcribe_audio(self, audio_bytes: bytes, mime_type: str = "audio/webm") -> str:
+        """NVIDIA NIM has no audio endpoint — fall back to the browser preview."""
+        raise NotImplementedError(
+            "NVIDIA NIM does not support audio transcription. "
+            "The browser's live speech-recognition preview will be used instead."
+        )
+
+    def continue_intake(
+        self, conversation: List[ConversationTurn], session_id: str
+    ) -> IntakeResponse:
+        """Generate the next assistant response using the NVIDIA NIM endpoint."""
+        messages: List[Dict[str, Any]] = [{"role": "system", "content": SYSTEM_PROMPT}]
+        for turn in conversation:
+            if turn.content.strip():
+                role = "assistant" if turn.role == "assistant" else "user"
+                messages.append({"role": role, "content": turn.content})
+
+        # Try with JSON mode first; fall back gracefully for models that reject it.
+        try:
+            completion = self._client.chat.completions.create(
+                model=self._model_name,
+                messages=messages,
+                temperature=0.3,
+                top_p=0.9,
+                response_format={"type": "json_object"},
+                max_tokens=2048,
+            )
+        except Exception:
+            completion = self._client.chat.completions.create(
+                model=self._model_name,
+                messages=messages,
+                temperature=0.3,
+                top_p=0.9,
+                max_tokens=2048,
+            )
+
+        raw_text = (completion.choices[0].message.content or "").strip()
+        payload = GeminiClient._parse_json_response(raw_text)
+        summary_payload = payload.get("summary")
+        summary = None
+        if payload.get("should_generate_summary") and isinstance(summary_payload, dict):
+            summary = ClinicalSummary.from_model_payload(summary_payload, session_id=session_id)
+        return IntakeResponse(
+            assistant_message=str(payload.get("assistant_message", "")).strip()
+            or "Could you tell me a bit more about what you're experiencing?",
+            should_generate_summary=bool(payload.get("should_generate_summary", False)),
+            questions_asked_so_far=int(payload.get("questions_asked_so_far", 0)),
+            summary_ready_reason=str(payload.get("summary_ready_reason", "")).strip(),
+            summary=summary,
+        )
+
+
+class GeminiAPIClient:
+    """Gemini client using a user-supplied Google AI Studio API key.
+
+    Drop-in replacement for GeminiClient when a personal API key is available,
+    so each user burns their own free quota instead of the developer's.
+    Requires: ``pip install google-generativeai``
+    """
+
+    def __init__(self, api_key: str, model_name: str = "gemini-2.0-flash-001") -> None:
+        from google import genai  # lazy import — optional dependency
+
+        self._client = genai.Client(api_key=api_key)
+        self._model_name = model_name
+
+    def transcribe_audio(self, audio_bytes: bytes, mime_type: str = "audio/webm") -> str:
+        """Transcribe audio bytes via the Gemini API key endpoint."""
+        import base64 as _b64
+        from google.genai import types as _t
+
+        b64 = _b64.b64encode(audio_bytes).decode()
+        response = self._client.models.generate_content(
+            model=self._model_name,
+            contents=[
+                "Transcribe the following audio recording verbatim and accurately. "
+                "Return only the spoken words — no commentary, no formatting.",
+                _t.Part.from_bytes(data=audio_bytes, mime_type=mime_type),
+            ],
+        )
+        text = (getattr(response, "text", "") or "").strip()
+        if not text:
+            raise ValueError("Gemini returned an empty transcription.")
+        return text
+
+    def continue_intake(
+        self, conversation: List[ConversationTurn], session_id: str
+    ) -> IntakeResponse:
+        """Generate the next assistant response using the API key endpoint."""
+        from google.genai import types as _t
+
+        prompt = GeminiClient._build_conversation_prompt(conversation)
+        response = self._client.models.generate_content(
+            model=self._model_name,
+            contents=prompt,
+            config=_t.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                temperature=0.3,
+                top_p=0.9,
+                response_mime_type="application/json",
+            ),
+        )
+        raw_text = getattr(response, "text", "") or ""
+        payload = GeminiClient._parse_json_response(raw_text)
+        summary_payload = payload.get("summary")
+        summary = None
+        if payload.get("should_generate_summary") and isinstance(summary_payload, dict):
+            summary = ClinicalSummary.from_model_payload(summary_payload, session_id=session_id)
+        return IntakeResponse(
+            assistant_message=str(payload.get("assistant_message", "")).strip()
+            or "Could you tell me a bit more about what you're experiencing?",
+            should_generate_summary=bool(payload.get("should_generate_summary", False)),
+            questions_asked_so_far=int(payload.get("questions_asked_so_far", 0)),
+            summary_ready_reason=str(payload.get("summary_ready_reason", "")).strip(),
+            summary=summary,
+        )

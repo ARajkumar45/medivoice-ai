@@ -9,12 +9,30 @@ from typing import Iterable, List, Mapping, Optional
 
 DEFAULT_PROJECT_ID = "project-d33cb38a-e8d2-46c0-972"
 DEFAULT_REGION = "us-central1"
-DEFAULT_MODEL = "gemini-2.5-flash-002"
-DEFAULT_MODEL_OPTIONS = (
-    "gemini-2.5-flash-002",
+DEFAULT_MODEL = "gemini-2.0-flash-001"
+
+# Google Gemini models (AI Studio API key or Vertex AI)
+GEMINI_MODELS = (
     "gemini-2.5-pro",
+    "gemini-2.5-flash",
     "gemini-2.0-flash-001",
+    "gemini-1.5-pro-002",
+    "gemini-1.5-flash-002",
 )
+
+# NVIDIA NIM models — identified by the "provider/model" slash convention
+NVIDIA_MODELS = (
+    "nvidia/llama-3.1-nemotron-70b-instruct",
+    "meta/llama-3.3-70b-instruct",
+    "meta/llama-3.1-70b-instruct",
+    "meta/llama-3.1-8b-instruct",
+    "mistralai/mixtral-8x7b-instruct-v0.1",
+    "mistralai/mistral-7b-instruct-v0.3",
+    "microsoft/phi-3-medium-128k-instruct",
+    "google/gemma-2-27b-it",
+)
+
+DEFAULT_MODEL_OPTIONS = GEMINI_MODELS + NVIDIA_MODELS
 
 
 @dataclass(slots=True)
