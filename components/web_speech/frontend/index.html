@@ -1,343 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: transparent;
-      padding: 8px 4px 12px;
-    }
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 150px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent !important; 
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
 
-    .mic-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      padding: 20px;
-    }
+        .mic-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .mic-container {
-      position: relative;
-      width: 192px;
-      height: 192px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .pulse-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid rgba(79, 209, 197, 0.4);
+            opacity: 0;
+            pointer-events: none;
+        }
 
-    .pulse-ring {
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(79, 209, 197, 0.3);
-      transition: all 0.3s ease;
-    }
-    .ring-1 { inset: 0; }
-    .ring-2 { inset: 16px; border-color: rgba(79, 209, 197, 0.2); }
-    .ring-3 { inset: 32px; border-color: rgba(79, 209, 197, 0.1); }
+        .mic-btn.recording ~ .pulse-ring:nth-child(1) { animation: pulse 1.5s infinite; }
+        .mic-btn.recording ~ .pulse-ring:nth-child(2) { animation: pulse 1.5s infinite; animation-delay: 0.5s; }
+        .mic-btn.recording ~ .pulse-ring:nth-child(3) { animation: pulse 1.5s infinite; animation-delay: 1.0s; }
 
-    .mic-container.active .ring-1 { animation: pulse 2s infinite; }
-    .mic-container.active .ring-2 { animation: pulse 2s infinite 0.5s; }
-    .mic-container.active .ring-3 { animation: pulse 2s infinite 1s; }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; border-color: rgba(186, 26, 26, 0.5); }
+            100% { transform: scale(1.5); opacity: 0; border-color: rgba(186, 26, 26, 0); }
+        }
 
-    @keyframes pulse {
-      0%   { transform: scale(1);   opacity: 0.8; }
-      100% { transform: scale(1.1); opacity: 0; }
-    }
+        .mic-btn {
+            width: 80px;
+            height: 80px;
+            background: #4fd1c5; 
+            color: #00504a;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0px 10px 20px -5px rgba(79, 209, 197, 0.4);
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /* ── Circular mic button ────────────────────────────────────────────── */
-    .mic-btn {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      border: none;
-      background-color: #4fd1c5;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 20px -5px rgba(79, 209, 197, 0.4);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      z-index: 20;
-    }
+        .mic-btn:hover {
+            transform: scale(1.05);
+        }
 
-    .mic-btn:hover { transform: scale(1.05); }
+        .mic-btn.recording {
+            background: #ba1a1a; 
+            color: white;
+            box-shadow: 0px 10px 20px -5px rgba(186, 26, 26, 0.4);
+        }
 
-    .mic-btn.active {
-      background-color: #ba1a1a;
-      box-shadow: 0 10px 20px -5px rgba(186, 26, 26, 0.4);
-    }
-
-    /* Icon — plain text character, works everywhere */
-    .mic-icon {
-      font-size: 32px;
-      line-height: 1;
-      display: block;
-      user-select: none;
-    }
-
-    /* ── Label ──────────────────────────────────────────────────────────── */
-    .mic-label {
-      font-size: 14px;
-      font-weight: 500;
-      color: #3c4947;
-      text-align: center;
-    }
-    .mic-label.recording { color: #ba1a1a; }
-
-    /* ── Recording visualizer ───────────────────────────────────────────── */
-    #recBar {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      padding: 10px 14px;
-      background: rgba(186, 26, 26, 0.05);
-      border: 1px solid rgba(186, 26, 26, 0.1);
-      border-radius: 8px;
-      margin-top: 12px;
-    }
-    #recBar.on { display: flex; }
-
-    .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #ba1a1a;
-      animation: blink 1s infinite;
-    }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    .wave { display: flex; align-items: center; gap: 3px; height: 20px; flex: 1; }
-    .bar  { width: 3px; height: 4px; background: #ba1a1a; border-radius: 2px; transition: height 0.1s ease; }
-
-    /* ── Transcription preview ──────────────────────────────────────────── */
-    #preview {
-      display: none;
-      width: 100%;
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      background: #f2f4f6;
-      border: 1px solid #e0e3e5;
-      color: #3c4947;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    #preview.on { display: block; }
-
-    /* ── Processing spinner ─────────────────────────────────────────────── */
-    #processing {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      margin-top: 12px;
-      padding: 12px;
-      background: #eceef0;
-      border-radius: 8px;
-      font-size: 14px;
-      color: #006a63;
-    }
-    #processing.on { display: flex; }
-
-    .spinner {
-      width: 16px; height: 16px;
-      border: 2px solid rgba(0,106,99,0.2);
-      border-top-color: #006a63;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    #unsupported {
-      display: none;
-      padding: 16px;
-      background: #ffdad6;
-      color: #93000a;
-      border-radius: 8px;
-      text-align: center;
-    }
-  </style>
+        .material-symbols-outlined {
+            font-size: 36px;
+        }
+    </style>
 </head>
 <body>
 
-<div id="unsupported">
-  Voice intake requires Chrome or Edge.
-</div>
-
-<div id="main">
-  <div class="mic-wrap">
-    <div class="mic-container" id="micContainer">
-      <div class="pulse-ring ring-1"></div>
-      <div class="pulse-ring ring-2"></div>
-      <div class="pulse-ring ring-3"></div>
-      <button class="mic-btn" id="micBtn" aria-label="Toggle recording">
-        <span class="mic-icon" id="micIcon">&#127908;</span>
-      </button>
+    <div class="mic-container">
+        <button id="record-btn" class="mic-btn">
+            <span class="material-symbols-outlined" id="mic-icon" style="font-variation-settings: 'FILL' 1;">mic</span>
+        </button>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
     </div>
-    <span class="mic-label" id="micLabel">Tap to start voice capture</span>
-  </div>
 
-  <div id="recBar">
-    <div class="dot"></div>
-    <div class="wave" id="wave">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-    </div>
-  </div>
+    <script>
+        // --- 1. THE STREAMLIT HANDSHAKE (FIXED) ---
+        function sendMessageToStreamlit(type, data) {
+            window.parent.postMessage({isStreamlitMessage: true, type: type, ...data}, "*");
+        }
+        
+        // We MUST tell Streamlit we are ready, otherwise it stays stuck on the loading box!
+        function initStreamlit() {
+            sendMessageToStreamlit("streamlit:componentReady", {apiVersion: 1});
+            sendMessageToStreamlit("streamlit:setFrameHeight", {height: 150});
+        }
+        
+        function sendValue(value) {
+            sendMessageToStreamlit("streamlit:setComponentValue", {value: value});
+        }
 
-  <div id="preview"></div>
+        window.addEventListener("load", initStreamlit);
+        window.addEventListener("resize", () => sendMessageToStreamlit("streamlit:setFrameHeight", {height: 150}));
 
-  <div id="processing">
-    <div class="spinner"></div>
-    Transcribing...
-  </div>
-</div>
+        // --- 2. AUDIO RECORDING LOGIC ---
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        
+        const recordBtn = document.getElementById('record-btn');
+        const micIcon = document.getElementById('mic-icon');
 
-<script>
-/* ── Streamlit bridge ────────────────────────────────────────────────────── */
-function post(msg)    { window.parent.postMessage({ isStreamlitMessage: true, ...msg }, "*"); }
-function setHeight()  { requestAnimationFrame(() => { post({ type: "streamlit:setFrameHeight", height: document.body.scrollHeight + 10 }); }); }
-function sendValue(v) { post({ type: "streamlit:setComponentValue", value: v, dataType: "json" }); }
-post({ type: "streamlit:componentReady", apiVersion: 1 });
-
-window.addEventListener("message", (evt) => {
-  if (!evt.data || evt.data.type !== "streamlit:render") return;
-  const args = evt.data.args || {};
-  if (args.transcript_ready === true) {
-    processingEl.classList.remove("on");
-    if (micIcon) micIcon.textContent = "\u{1F3A4}";
-    micLabel.textContent = "Tap to start voice capture";
-    micLabel.classList.remove("recording");
-    setHeight();
-  }
-});
-
-/* ── DOM refs ────────────────────────────────────────────────────────────── */
-const micBtn       = document.getElementById("micBtn");
-const micContainer = document.getElementById("micContainer");
-const micLabel     = document.getElementById("micLabel");
-const micIcon      = document.getElementById("micIcon");
-const recBar       = document.getElementById("recBar");
-const previewEl    = document.getElementById("preview");
-const processingEl = document.getElementById("processing");
-const bars         = Array.from(document.querySelectorAll(".bar"));
-
-/* ── Browser support ─────────────────────────────────────────────────────── */
-if (!navigator.mediaDevices || !window.MediaRecorder) {
-  document.getElementById("main").style.display = "none";
-  document.getElementById("unsupported").style.display = "block";
-  setHeight();
-} else {
-
-  let mediaStream = null, recorder = null, audioCtx = null;
-  let analyser = null, animId = null, chunks = [];
-  let isRecording = false, liveText = "";
-
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let recognition = null;
-  if (SR) {
-    recognition = new SR();
-    recognition.continuous     = true;
-    recognition.interimResults = true;
-    recognition.lang           = "en-US";
-    recognition.onresult = (e) => {
-      let interim = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) liveText += e.results[i][0].transcript + " ";
-        else                      interim  += e.results[i][0].transcript;
-      }
-      const full = liveText + interim;
-      previewEl.textContent = full.trim();
-      previewEl.classList.toggle("on", !!full.trim());
-      setHeight();
-    };
-  }
-
-  micBtn.addEventListener("click", async () => {
-    if (isRecording) stopRecording();
-    else             await startRecording();
-  });
-
-  async function startRecording() {
-    try {
-      mediaStream = await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-      });
-    } catch (_) { alert("Microphone access denied."); return; }
-
-    audioCtx = new AudioContext();
-    const src = audioCtx.createMediaStreamSource(mediaStream);
-    analyser  = audioCtx.createAnalyser();
-    analyser.fftSize = 64;
-    src.connect(analyser);
-
-    const mimeType = ["audio/webm;codecs=opus", "audio/webm"].find(t => MediaRecorder.isTypeSupported(t)) || "";
-    recorder = new MediaRecorder(mediaStream, mimeType ? { mimeType } : {});
-    chunks   = [];
-    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-    recorder.onstop = () => {
-      const blob   = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
-      const reader = new FileReader();
-      reader.onload = () => {
-        sendValue({ audio_b64: reader.result.split(",")[1], mime_type: recorder.mimeType.split(";")[0], preview: liveText.trim() });
-        processingEl.classList.add("on");
-        setHeight();
-      };
-      reader.readAsDataURL(blob);
-    };
-
-    isRecording = true;
-    liveText    = "";
-    recorder.start(200);
-    if (recognition) try { recognition.start(); } catch (_) {}
-
-    micBtn.classList.add("active");
-    micContainer.classList.add("active");
-    micIcon.textContent = "⏹";
-    micLabel.textContent = "Recording... Tap to stop";
-    micLabel.classList.add("recording");
-    recBar.classList.add("on");
-    drawLevel();
-    setHeight();
-  }
-
-  function stopRecording() {
-    isRecording = false;
-    if (recognition) try { recognition.stop(); } catch (_) {}
-    if (recorder && recorder.state !== "inactive") recorder.stop();
-    mediaStream.getTracks().forEach(t => t.stop());
-    cancelAnimationFrame(animId);
-    if (audioCtx) audioCtx.close();
-
-    micBtn.classList.remove("active");
-    micContainer.classList.remove("active");
-    micIcon.textContent = "\u{1F3A4}";
-    micLabel.textContent = "Processing speech...";
-    micLabel.classList.remove("recording");
-    recBar.classList.remove("on");
-    previewEl.classList.remove("on");
-    setHeight();
-  }
-
-  function drawLevel() {
-    if (!isRecording || !analyser) return;
-    const data = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(data);
-    bars.forEach((bar, i) => {
-      bar.style.height = Math.max(4, Math.round((data[i % data.length] / 255) * 20)) + "px";
-    });
-    animId = requestAnimationFrame(drawLevel);
-  }
-
-  setHeight();
-}
-</script>
+        recordBtn.onclick = async () => {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: { noiseSuppression: true, echoCancellation: true } 
+                    });
+                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = () => {
+                            const base64Audio = reader.result.split(',')[1];
+                            sendValue({ audio_b64: base64Audio, mime_type: 'audio/webm', preview: '' });
+                        };
+                        audioChunks = [];
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordBtn.classList.add('recording');
+                    micIcon.textContent = 'stop_circle';
+                    
+                } catch (err) {
+                    console.error("Microphone access denied:", err);
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                micIcon.textContent = 'mic';
+                
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                
+                recordBtn.disabled = true;
+                recordBtn.style.opacity = "0.5";
+                
+                setTimeout(() => {
+                    recordBtn.disabled = false;
+                    recordBtn.style.opacity = "1";
+                }, 2500);
+            }
+        };
+    </script>
 </body>
 </html>
